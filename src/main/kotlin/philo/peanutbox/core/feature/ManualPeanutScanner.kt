@@ -12,14 +12,13 @@ import kotlin.reflect.full.findAnnotation
 object ManualPeanutScanner : PeanutScanner {
 
     override fun scan(reflections: Reflections): Set<Any> {
-        val peanuts = mutableSetOf<Any>()
-        val peanutConfigClasses = reflections.getTypesAnnotatedWith(PeanutBox::class.java)
-        for (peanutConfigClass in peanutConfigClasses) {
-            val peanutObjects = createPeanutsFromConfig(peanutConfigClass.kotlin)
-            peanuts.addAll(peanutObjects)
-        }
-        return peanuts
+        val peanutConfigClasses = extractPeanutConfigClasses(reflections)
+        return peanutConfigClasses.flatMap { createPeanutsFromConfig(it.kotlin) }
+                .toMutableSet()
     }
+
+    private fun extractPeanutConfigClasses(reflections: Reflections): MutableSet<Class<*>> =
+            reflections.getTypesAnnotatedWith(PeanutBox::class.java)
 
     private fun createPeanutsFromConfig(peanutConfigClass: KClass<*>): List<Any> {
         val peanutConfigObject = peanutConfigClass.createInstance()

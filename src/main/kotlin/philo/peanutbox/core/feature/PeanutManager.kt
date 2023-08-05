@@ -26,13 +26,13 @@ object PeanutManager {
         println("peanuts = ${peanuts}")
     }
 
-    fun <T> findPeanut(clazz: Class<T>): T? {
+//    fun <T> findPeanut(clazz: Class<T>): T {
 //        return peanuts.stream()
 //                .filter { peanut: Any? -> clazz.isAssignableFrom(peanut!!.javaClass) }
 //                .findAny()
 //                .orElse(null) as T?
-        return null;
-    }
+//        return null;
+//    }
 
     /*
         fun changePeanut(oldPeanutType: Class<*>, newPeanut: Any) {
