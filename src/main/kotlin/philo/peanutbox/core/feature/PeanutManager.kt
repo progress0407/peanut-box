@@ -21,12 +21,8 @@ object PeanutManager {
         val reflections = Reflections(path)
 
         val manualPeanuts = ManualPeanutScanner.scan(reflections)
-
-        val autoPeanutScanner = AutoPeanutScanner.instance()
-
-        autoPeanutScanner.scan(reflections, manualPeanuts)
-
-        peanuts.addAll(manualPeanuts)
+        val allPeanuts = AutoPeanutScanner.scan(reflections, manualPeanuts)
+        peanuts.addAll(allPeanuts)
 
         println("peanuts = ${peanuts}")
     }
