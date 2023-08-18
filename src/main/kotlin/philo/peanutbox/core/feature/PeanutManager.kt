@@ -1,21 +1,13 @@
 package philo.peanutbox.core.feature
 
 import org.reflections.Reflections
+import philo.peanutbox.core.feature.scanner.AutoPeanutScanner
+import philo.peanutbox.core.feature.scanner.ManualPeanutScanner
 
 object PeanutManager {
 
     private val peanuts: MutableSet<Any> = HashSet()
 
-    /*
-        fun init(path: String?) {
-            val reflections = Reflections(path)
-
-            val manualPeanuts: Unit = manualPeanutScanner.scan(reflections, HashSet<E>(peanuts))
-            peanuts.addAll(manualPeanuts)
-            val autoPeanuts: Unit = autoPeanutScanner.scan(reflections, HashSet<E>(peanuts))
-            peanuts.addAll(autoPeanuts)
-        }
-    */
     fun init(path: String) {
         // Get the list of all .kt files in the directory
         val reflections = Reflections(path)
@@ -35,6 +27,10 @@ object PeanutManager {
                 .orElseThrow { RuntimeException("해당 peanut이 존재하지 않습니다.") } as T
     }
 
+    fun clear() {
+        peanuts.clear()
+    }
+
     /*
         fun changePeanut(oldPeanutType: Class<*>, newPeanut: Any) {
             val beforePeanut = findPeanut(oldPeanutType)
@@ -45,10 +41,6 @@ object PeanutManager {
             log.info("add new peanut = {}", newPeanut.javaClass.simpleName)
         }
     */
-
-    fun clear() {
-        peanuts.clear()
-    }
 
     /*
         companion object {

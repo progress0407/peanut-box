@@ -1,4 +1,4 @@
-package philo.peanutbox.core.feature
+package philo.peanutbox.core.feature.scanner
 
 import org.reflections.Reflections
 import philo.peanutbox.core.annotation.AutoPeanut
@@ -15,11 +15,11 @@ object AutoPeanutScanner {
 
 
     fun scan(reflections: Reflections, peanuts: Set<Any>): Set<Any> {
-        this.peanuts.addAll(peanuts)
-        this.reflections = reflections
+        AutoPeanutScanner.peanuts.addAll(peanuts)
+        AutoPeanutScanner.reflections = reflections
         return try {
             scanInternal()
-            this.peanuts
+            AutoPeanutScanner.peanuts
         } catch (e: Exception) {
             throw RuntimeException(e)
         }

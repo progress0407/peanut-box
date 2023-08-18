@@ -1,8 +1,9 @@
-package philo.peanutbox.core.feature
+package philo.peanutbox.core.feature.scanner
 
 import org.reflections.Reflections
 import philo.peanutbox.core.annotation.ManualPeanut
 import philo.peanutbox.core.annotation.PeanutBox
+import philo.peanutbox.core.feature.PeanutScanner
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.createInstance
