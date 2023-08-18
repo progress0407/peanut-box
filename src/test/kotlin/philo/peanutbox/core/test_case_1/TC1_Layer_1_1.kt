@@ -4,4 +4,9 @@ import philo.peanutbox.core.annotation.AutoPeanut
 
 @AutoPeanut
 class TC1_Layer_1_1(private val layer_2_1: TC1_Layer_2_1,
-                    private val layer_2_2: TC1_Layer_2_2)
+                    private val layer_2_2: TC1_Layer_2_2) {
+
+    override fun toString(): String {
+        return "TC1_Layer_1_1(layer_2_1=$layer_2_1, layer_2_2=$layer_2_2)"
+    }
+}

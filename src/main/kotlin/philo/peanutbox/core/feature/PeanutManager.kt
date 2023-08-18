@@ -24,7 +24,7 @@ object PeanutManager {
         val allPeanuts = AutoPeanutScanner.scan(reflections, manualPeanuts)
         peanuts.addAll(allPeanuts)
 
-        println("peanuts = ${peanuts}")
+        println("registered peanuts: \n${peanuts.joinToString(separator = "\n")}")
     }
 
     fun <T> findPeanut(clazz: Class<T>): T {
