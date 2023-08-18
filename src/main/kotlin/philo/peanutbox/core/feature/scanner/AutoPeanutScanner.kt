@@ -2,8 +2,7 @@ package philo.peanutbox.core.feature.scanner
 
 import org.reflections.Reflections
 import philo.peanutbox.core.annotation.ThisIsPeanut
-import philo.peanutbox.core.feature.classifier.ClassTypeClassifier
-import philo.peanutbox.core.feature.classifier.ClassTypePeanutFactory
+import philo.peanutbox.core.feature.peanutfactory.ClassTypePeanutFactory
 import java.util.*
 
 object AutoPeanutScanner {
@@ -43,7 +42,7 @@ object AutoPeanutScanner {
      * peanutClass가 어노테이션이거나 인터페이스 구현체라면 생성하지 않습니다.
      */
     private fun isNotCreationCase(peanutClass: Class<*>): Boolean {
-        return peanutClass.isAnnotation || ClassTypeClassifier.isConcreteClassImplemented(peanutClass)
+        return peanutClass.isAnnotation /*|| ClassTypeClassifier.isConcreteClassImplemented(peanutClass)*/
     }
 
     private fun validateConstructorUnique(peanutClass: Class<*>) {

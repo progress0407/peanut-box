@@ -1,7 +1,5 @@
-package philo.peanutbox.core.feature.classifier
+package philo.peanutbox.core.feature.peanutfactory
 
-import philo.peanutbox.core.feature.classifier.ClassTypeClassifier.isConcreteClassImplemented
-import philo.peanutbox.core.feature.classifier.ClassTypeClassifier.isSimpleConcreteClass
 import philo.peanutbox.core.feature.scanner.AutoPeanutScanner
 
 object ClassTypePeanutFactory {
@@ -15,7 +13,7 @@ object ClassTypePeanutFactory {
     fun createPeanut(peanutClass: Class<*>): Any {
         return if (isSimpleConcreteClass(peanutClass) || isConcreteClassImplemented(peanutClass)) {
             DiTypePeanutFactory.createPeanut(peanutClass)
-        } else if (ClassTypeClassifier.isInterface(peanutClass)) {
+        } else if (isInterface(peanutClass)) {
             DiTypePeanutFactory.createPeanut(getConcreteType(peanutClass))
         } else {
             throw RuntimeException("예측하지 못한 타입입니다: + $peanutClass")
@@ -40,4 +38,23 @@ object ClassTypePeanutFactory {
         return subPeanutClasses[0] as Class<*>
     }
 
+    private fun isSimpleConcreteClass(clazz: Class<*>): Boolean {
+        return isConcreteClass(clazz) && hasInterfaces(clazz).not()
+    }
+
+    private fun isInterface(clazz: Class<*>): Boolean {
+        return clazz.isInterface
+    }
+
+    private fun isConcreteClassImplemented(clazz: Class<*>): Boolean {
+        return isConcreteClass(clazz) && hasInterfaces(clazz)
+    }
+
+    private fun isConcreteClass(clazz: Class<*>): Boolean {
+        return isInterface(clazz).not()
+    }
+
+    private fun hasInterfaces(clazz: Class<*>): Boolean {
+        return clazz.interfaces.isNotEmpty()
+    }
 }
