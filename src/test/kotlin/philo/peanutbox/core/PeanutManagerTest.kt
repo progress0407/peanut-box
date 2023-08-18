@@ -12,6 +12,7 @@ import philo.peanutbox.core.test_case_1.*
 import philo.peanutbox.core.test_case_2.InMemoryUserRepository
 import philo.peanutbox.core.test_case_2.UserController
 import philo.peanutbox.core.test_case_2.UserService
+import philo.peanutbox.core.test_case_3.*
 
 class PeanutManagerTest {
 
@@ -26,8 +27,8 @@ class PeanutManagerTest {
         val itemService = PeanutManager.findPeanut(ItemService::class.java)
 
         assertAll(
-                Executable { assertThat(itemService).isNotNull },
-                Executable { assertThat(itemService).isInstanceOf(ItemService::class.java) }
+            Executable { assertThat(itemService).isNotNull },
+            Executable { assertThat(itemService).isInstanceOf(ItemService::class.java) }
         )
     }
 
@@ -35,13 +36,13 @@ class PeanutManagerTest {
     fun getPeanut() {
         PeanutManager.init("philo.peanutbox.core.test_case_1")
         assertAll(
-                Executable { assert_peanut_contains(TC1_Layer_1_1::class.java) },
-                Executable { assert_peanut_contains(TC1_Layer_1_2::class.java) },
-                Executable { assert_peanut_contains(TC1_Layer_1_3::class.java) },
-                Executable { assert_peanut_contains(TC1_Layer_2_1::class.java) },
-                Executable { assert_peanut_contains(TC1_Layer_2_2::class.java) },
-                Executable { assert_peanut_contains(TC1_Layer_2_3::class.java) },
-                Executable { assert_peanut_contains(TC1_Layer_3_1::class.java) }
+            Executable { assert_peanut_contains(TC1_Layer_1_1::class.java) },
+            Executable { assert_peanut_contains(TC1_Layer_1_2::class.java) },
+            Executable { assert_peanut_contains(TC1_Layer_1_3::class.java) },
+            Executable { assert_peanut_contains(TC1_Layer_2_1::class.java) },
+            Executable { assert_peanut_contains(TC1_Layer_2_2::class.java) },
+            Executable { assert_peanut_contains(TC1_Layer_2_3::class.java) },
+            Executable { assert_peanut_contains(TC1_Layer_3_1::class.java) }
         )
     }
 
@@ -50,12 +51,26 @@ class PeanutManagerTest {
         PeanutManager.init("philo.peanutbox.core.test_case_2")
         val userController: UserController = PeanutManager.findPeanut(UserController::class.java)
         assertAll(
-                Executable { assert_peanut_contains(UserService::class.java) },
-                Executable { assert_peanut_contains(InMemoryUserRepository::class.java) },
-                Executable { assert_peanut_contains(UserController::class.java) },
-                Executable { assert_peanut_contains(ObjectMapper::class.java) },
-                Executable { assertThat(userController.userService).isExactlyInstanceOf(UserService::class.java) },
-                Executable { assertThat(userController.objectMapper).isExactlyInstanceOf(ObjectMapper::class.java) }
+            Executable { assert_peanut_contains(UserService::class.java) },
+            Executable { assert_peanut_contains(InMemoryUserRepository::class.java) },
+            Executable { assert_peanut_contains(UserController::class.java) },
+            Executable { assert_peanut_contains(ObjectMapper::class.java) },
+            Executable { assertThat(userController.userService).isExactlyInstanceOf(UserService::class.java) },
+            Executable { assertThat(userController.objectMapper).isExactlyInstanceOf(ObjectMapper::class.java) }
+        )
+    }
+
+    @Test
+    fun getPeanut_3() {
+        PeanutManager.init("philo.peanutbox.core.test_case_3")
+        assertAll(
+            Executable { assert_peanut_contains(TC3_Layer_1::class.java) },
+            Executable { assert_peanut_contains(TC3_Layer_2_1::class.java) },
+            Executable { assert_peanut_contains(TC3_Layer_2_2::class.java) },
+            Executable { assert_peanut_contains(TC3_Layer_3_1::class.java) },
+            Executable { assert_peanut_contains(TC3_Layer_3_2::class.java) },
+            Executable { assert_peanut_contains(TC3_Layer_3_3::class.java) },
+            Executable { assert_peanut_contains(TC3_Layer_4::class.java) }
         )
     }
 
