@@ -22,6 +22,7 @@ object PeanutManager {
 
         val manualPeanuts = ManualPeanutScanner.scan(reflections)
         val allPeanuts = AutoPeanutScanner.scan(reflections, manualPeanuts)
+
         peanuts.addAll(allPeanuts)
 
         println("registered peanuts: \n${peanuts.joinToString(separator = "\n")}")

@@ -49,10 +49,13 @@ object AutoPeanutScanner {
         return when {
             ClassTypeClassifier.isSimpleConcreteClass(peanutClass) ->
                 createPeanutsByInjectionTypeRecursively(peanutClass)
+
             ClassTypeClassifier.isConcreteClassImplemented(peanutClass) ->
                 createPeanutsByInjectionTypeRecursively(peanutClass)
+
             ClassTypeClassifier.isInterface(peanutClass) ->
                 createPeanutsByInjectionTypeRecursively(subType(peanutClass))
+
             else -> throw RuntimeException("예측하지 못한 타입입니다: + $peanutClass")
         }
     }
@@ -144,8 +147,8 @@ object AutoPeanutScanner {
         val constructors = peanutClass.declaredConstructors
         val constructor = constructors[0]
         val parameterTypes = constructor.parameterTypes
-        val parameterObject = findAndSaveConstructorArguments(parameterTypes)
-        return constructor.newInstance(*parameterObject)
+        val parameterObjects = findAndSaveConstructorArguments(parameterTypes)
+        return constructor.newInstance(*parameterObjects)
     }
 
     /**
@@ -155,14 +158,14 @@ object AutoPeanutScanner {
      * 2. 가져온 peanut인자를 autoPeanutScanner의 peanuts 필드에 추가합니다.
      */
     @Throws(Exception::class)
-    private fun findAndSaveConstructorArguments(argumentClasses: Array<Class<*>>): Array<Any?> {
-        val argumentObjects = arrayOfNulls<Any>(argumentClasses.size)
-        for (i in argumentClasses.indices) {
-            val argumentClass = argumentClasses[i]
-            val argumentObject = createPeanutsByClassTypeRecursively(argumentClass)
-            argumentObjects[i] = argumentObject
-            peanuts.add(argumentObject)
-        }
+    private fun findAndSaveConstructorArguments(argumentClasses: Array<Class<*>>): Array<Any> {
+
+        val argumentObjects: Array<Any> = Arrays.stream(argumentClasses)
+            .map { createPeanutsByClassTypeRecursively(it) }
+            .toArray()
+
+        peanuts.addAll(argumentObjects)
+
         return argumentObjects
     }
 

@@ -1,8 +1,7 @@
 package philo.peanutbox.core.feature.classifier
 
 import philo.peanutbox.core.annotation.GiveMePeanut
-import java.lang.reflect.Field
-import java.util.*
+import java.util.Arrays.stream
 
 object DiTypeClassifier : TypeClassifier {
     fun isDefaultConstructorInjection(peanutClass: Class<*>): Boolean {
@@ -27,17 +26,13 @@ object DiTypeClassifier : TypeClassifier {
     }
 
     private fun hasFieldInjectionAnnotation(type: Class<*>): Boolean {
-        return Arrays.stream<Field>(type.getDeclaredFields())
-            .anyMatch { field: Field ->
-                field.isAnnotationPresent(
-                    GiveMePeanut::class.java
-                )
-            }
+        return stream(type.getDeclaredFields())
+            .anyMatch { it.isAnnotationPresent(GiveMePeanut::class.java) }
     }
 
     private fun hasConstructorWithArguments(peanutClass: Class<*>): Boolean {
-        val constructor = peanutClass.getDeclaredConstructors()[0]
+        val constructor = peanutClass.getDeclaredConstructors()[0] // first constructor
         val parameterClasses = constructor.parameterTypes
-        return parameterClasses.size >= 1
+        return parameterClasses.isNotEmpty()
     }
 }
