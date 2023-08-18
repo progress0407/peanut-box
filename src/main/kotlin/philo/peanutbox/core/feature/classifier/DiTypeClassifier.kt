@@ -25,6 +25,11 @@ object DiTypeClassifier : TypeClassifier {
         }
     }
 
+    /**
+     * 해당 클래스 자체가 아닌,
+     *
+     * 클래스의 필드들이 필드 주입 어노테이션(GiveMePeanut)을 가지고 있는 경우
+     */
     private fun hasFieldInjectionAnnotation(type: Class<*>): Boolean {
         return stream(type.getDeclaredFields())
             .anyMatch { it.isAnnotationPresent(GiveMePeanut::class.java) }

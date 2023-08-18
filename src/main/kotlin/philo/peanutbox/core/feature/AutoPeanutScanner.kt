@@ -46,33 +46,28 @@ object AutoPeanutScanner {
      */
     @Throws(Exception::class)
     private fun createPeanutsByClassTypeRecursively(peanutClass: Class<*>): Any {
-        return when {
-            ClassTypeClassifier.isSimpleConcreteClass(peanutClass) ->
-                createPeanutsByInjectionTypeRecursively(peanutClass)
-
-            ClassTypeClassifier.isConcreteClassImplemented(peanutClass) ->
-                createPeanutsByInjectionTypeRecursively(peanutClass)
-
-            ClassTypeClassifier.isInterface(peanutClass) ->
-                createPeanutsByInjectionTypeRecursively(subType(peanutClass))
-
-            else -> throw RuntimeException("예측하지 못한 타입입니다: + $peanutClass")
+        return if (ClassTypeClassifier.isSimpleConcreteClass(peanutClass) || ClassTypeClassifier.isConcreteClassImplemented(peanutClass)) {
+            createPeanutsByInjectionTypeRecursively(peanutClass)
+        }
+        else if (ClassTypeClassifier.isInterface(peanutClass)) {
+            createPeanutsByInjectionTypeRecursively(getConcreteType(peanutClass))
+        } else {
+            throw RuntimeException("예측하지 못한 타입입니다: + $peanutClass")
         }
     }
 
     /**
      * Peanut을 생성하거나 이미 존재하는 Peanut을 반환합니다.
      *
-     *
      * DI의 형태(생성자, 필드)에 따라 생성방식이 다릅니다.
-     *
      *
      * DFS로 동작합니다.
      */
     @Throws(Exception::class)
     private fun createPeanutsByInjectionTypeRecursively(peanutClass: Class<*>): Any {
-        if (isAlreadyExistPeanut(peanutClass)) {
-            return findPeanut(peanutClass)!!
+        val foundPeanut = findPeanut(peanutClass)
+        if (isAlreadyExistPeanut(foundPeanut)) {
+            return foundPeanut!!
         } else if (DiTypeClassifier.isDefaultConstructorInjection(peanutClass)) {
             return createPeanutByDefaultConstructor(peanutClass)
         } else if (DiTypeClassifier.isConstructorWithArgumentsInjection(peanutClass)) {
@@ -106,13 +101,13 @@ object AutoPeanutScanner {
      *
      * 즉, 스프링의 @Praimary를 고려하지 않습니다.
      */
-    private fun subType(peanutClass: Class<*>): Class<*> {
+    private fun getConcreteType(peanutClass: Class<*>): Class<*> {
         val subPeanutClasses: Array<Any> = reflections!!.getSubTypesOf(peanutClass).toTypedArray()
-        if (subPeanutClasses.size == 0) {
+        if (subPeanutClasses.isEmpty()) {
             throw RuntimeException("자식 클래스가 존재하지 않습니다. : $peanutClass")
         }
         if (subPeanutClasses.size >= 2) {
-            throw RuntimeException("여러 하위 타입을 지원하지 않습니다. : " + Arrays.toString(subPeanutClasses))
+            throw RuntimeException("여러 하위 타입을 지원하지 않습니다. : " + subPeanutClasses.contentToString())
         }
         return subPeanutClasses[0] as Class<*>
     }
@@ -182,8 +177,8 @@ object AutoPeanutScanner {
         return constructor
     }
 
-    private fun isAlreadyExistPeanut(peanut: Class<*>): Boolean {
-        return findPeanut(peanut) != null
+    private fun isAlreadyExistPeanut(peanut: Any?): Boolean {
+        return peanut != null
     }
 
     private fun <T> findPeanut(clazz: Class<T>): T? {
