@@ -19,7 +19,7 @@ object AutoPeanutScanner {
         AutoPeanutScanner.reflections = reflections
         return try {
             scanInternal()
-            AutoPeanutScanner.peanuts
+            this.peanuts
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
@@ -79,9 +79,6 @@ object AutoPeanutScanner {
     }
 
     private fun findPeanutAnnotatedTypes(reflections: Reflections?): Set<Class<*>> {
-        //    peanuts.addAll(reflections.getTypesAnnotatedWith(Controller.class));
-//    peanuts.addAll(reflections.getTypesAnnotatedWith(Service.class));
-//    peanuts.addAll(reflections.getTypesAnnotatedWith(Repository.class));
         return reflections!!.getTypesAnnotatedWith(AutoPeanut::class.java)
     }
 
@@ -118,8 +115,14 @@ object AutoPeanutScanner {
     }
 
     /**
-     * 1. 필드에 들어가는 peanut 을 만들어서 autoPeanutScanner의 peanuts 필드에 추가합니다. 2. 생성될 peanut의 필드에 주입을 합니다. 3.
-     * 필드 주입한 peanut을 생성하여 반환합니다.
+     *
+     * 1. private 기본 생성자를 기반으로 peanut을 만듭니다
+     *
+     * 2. 생성할 peanut의 필드들을 만듭니다
+     *
+     * 3. 필드 오브젝트를 peanut에 set합니다
+     *
+     * 4. 해당 peanut을 반환합니다
      */
     @Throws(Exception::class)
     private fun createPeanutByFileInjection(peanutClass: Class<*>): Any {
@@ -130,7 +133,7 @@ object AutoPeanutScanner {
             if (field.isAnnotationPresent(GiveMePeanut::class.java)) {
                 field.isAccessible = true
                 val fieldObject = createPeanutsByClassTypeRecursively(field.type)
-                field[newObject] = fieldObject
+                field[newObject] = fieldObject // 생성한 객체의 필드에 주입
                 peanuts.add(fieldObject)
             }
         }

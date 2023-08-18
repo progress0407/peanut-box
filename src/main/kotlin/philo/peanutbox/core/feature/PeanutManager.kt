@@ -30,23 +30,4 @@ object PeanutManager {
     fun clear() {
         peanuts.clear()
     }
-
-    /*
-        fun changePeanut(oldPeanutType: Class<*>, newPeanut: Any) {
-            val beforePeanut = findPeanut(oldPeanutType)
-                    ?: throw RuntimeException("제거할 peanut이 존재하지 않습니다.")
-            peanuts.remove(beforePeanut)
-            log.info("remove peanut = {}", beforePeanut.javaClass.simpleName)
-            peanuts.add(newPeanut)
-            log.info("add new peanut = {}", newPeanut.javaClass.simpleName)
-        }
-    */
-
-    /*
-        companion object {
-            private val log = LoggerFactory.getLogger(PeanutBox::class.java)
-            private val manualPeanutScanner: ManualPeanutScanner = ManualPeanutScanner.instance()
-            private val autoPeanutScanner: AutoPeanutScanner = AutoPeanutScanner.instance()
-        }
-    */
 }
