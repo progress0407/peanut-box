@@ -1,13 +1,13 @@
 package philo.peanutbox.core.test_case_2
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import philo.peanutbox.core.annotation.ManualPeanut
-import philo.peanutbox.core.annotation.PeanutBox
+import philo.peanutbox.core.annotation.Peanut
+import philo.peanutbox.core.annotation.ThisIsPeanutContainer
 
-@PeanutBox
+@ThisIsPeanutContainer
 class PeanutConfig {
 
-    @ManualPeanut
+    @Peanut
     fun objectMapper(): ObjectMapper {
         return ObjectMapper()
     }

@@ -1,9 +1,9 @@
 package philo.peanutbox.core.test_case_2
 
-import philo.peanutbox.core.annotation.AutoPeanut
+import philo.peanutbox.core.annotation.ThisIsPeanut
 import java.util.concurrent.ConcurrentHashMap
 
-@AutoPeanut
+@ThisIsPeanut
 class InMemoryUserRepository : UserDao {
     private val database: MutableMap<String, User> = ConcurrentHashMap<String, User>()
 

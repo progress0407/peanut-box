@@ -4,12 +4,11 @@ import org.reflections.Reflections
 import philo.peanutbox.core.feature.scanner.AutoPeanutScanner
 import philo.peanutbox.core.feature.scanner.ManualPeanutScanner
 
-object PeanutManager {
+object PeanutBox {
 
     private val peanuts: MutableSet<Any> = HashSet()
 
     fun init(path: String) {
-        // Get the list of all .kt files in the directory
         val reflections = Reflections(path)
 
         val manualPeanuts = ManualPeanutScanner.scan(reflections)

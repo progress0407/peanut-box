@@ -1,7 +1,7 @@
 package philo.peanutbox.core.feature.scanner
 
 import org.reflections.Reflections
-import philo.peanutbox.core.annotation.AutoPeanut
+import philo.peanutbox.core.annotation.ThisIsPeanut
 import philo.peanutbox.core.feature.classifier.ClassTypeClassifier
 import philo.peanutbox.core.feature.classifier.ClassTypePeanutFactory
 import java.util.*
@@ -35,9 +35,8 @@ object AutoPeanutScanner {
         }
     }
 
-
     private fun findPeanutAnnotatedTypes(reflections: Reflections?): Set<Class<*>> {
-        return reflections!!.getTypesAnnotatedWith(AutoPeanut::class.java)
+        return reflections!!.getTypesAnnotatedWith(ThisIsPeanut::class.java)
     }
 
     /**
@@ -46,7 +45,6 @@ object AutoPeanutScanner {
     private fun isNotCreationCase(peanutClass: Class<*>): Boolean {
         return peanutClass.isAnnotation || ClassTypeClassifier.isConcreteClassImplemented(peanutClass)
     }
-
 
     private fun validateConstructorUnique(peanutClass: Class<*>) {
         if (peanutClass.declaredConstructors.size >= 2) {

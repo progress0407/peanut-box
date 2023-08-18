@@ -1,10 +1,10 @@
 package philo.peanutbox.core.test_case_2
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import philo.peanutbox.core.annotation.AutoPeanut
 import philo.peanutbox.core.annotation.GiveMePeanut
+import philo.peanutbox.core.annotation.ThisIsPeanut
 
-@AutoPeanut
+@ThisIsPeanut
 class UserController {
 
     @GiveMePeanut

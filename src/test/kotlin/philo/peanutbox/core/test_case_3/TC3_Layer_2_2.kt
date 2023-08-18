@@ -1,8 +1,8 @@
 package philo.peanutbox.core.test_case_3
 
-import philo.peanutbox.core.annotation.AutoPeanut
+import philo.peanutbox.core.annotation.ThisIsPeanut
 
-@AutoPeanut
+@ThisIsPeanut
 class TC3_Layer_2_2(private val tc3_layer_3_3: TC3_Layer_3_3) : TC3_ILayer_2_2 {
 
     override fun toString(): String {

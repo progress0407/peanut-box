@@ -1,9 +1,9 @@
 package philo.peanutbox.core.test_case_3
 
-import philo.peanutbox.core.annotation.AutoPeanut
 import philo.peanutbox.core.annotation.GiveMePeanut
+import philo.peanutbox.core.annotation.ThisIsPeanut
 
-@AutoPeanut
+@ThisIsPeanut
 class TC3_Layer_2_1 {
     @GiveMePeanut
     private val layer_3_1: TC3_ILayer_3_1? = null

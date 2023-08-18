@@ -82,7 +82,6 @@ object DiTypePeanutFactory {
      */
     @Throws(Exception::class)
     private fun findAndCacheConstructorArguments(argumentClasses: Array<Class<*>>): Array<Any> {
-
         val argumentObjects: Array<Any> = Arrays.stream(argumentClasses)
             .map { ClassTypePeanutFactory.createPeanut(it) }
             .toArray()

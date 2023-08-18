@@ -1,17 +1,17 @@
 package philo.peanutbox.app.item
 
-import philo.peanutbox.core.annotation.ManualPeanut
-import philo.peanutbox.core.annotation.PeanutBox
+import philo.peanutbox.core.annotation.Peanut
+import philo.peanutbox.core.annotation.ThisIsPeanutContainer
 
-@PeanutBox
+@ThisIsPeanutContainer
 class ItemPeanutConfig {
 
-    @ManualPeanut
+    @Peanut
     fun item(): Item {
         return Item()
     }
 
-    @ManualPeanut
+    @Peanut
     fun itemService(): ItemService {
         return ItemService()
     }

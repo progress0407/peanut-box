@@ -1,9 +1,9 @@
 package philo.peanutbox.core.test_case_2
 
-import philo.peanutbox.core.annotation.AutoPeanut
 import philo.peanutbox.core.annotation.GiveMePeanut
+import philo.peanutbox.core.annotation.ThisIsPeanut
 
-@AutoPeanut
+@ThisIsPeanut
 class UserService private constructor() {
 
     @GiveMePeanut
