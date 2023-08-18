@@ -3,7 +3,7 @@ package philo.peanutbox.core.feature.classifier
 object ClassTypeClassifier : TypeClassifier {
 
     fun isSimpleConcreteClass(clazz: Class<*>): Boolean {
-        return isConcreteClass(clazz) && !hasInterfaces(clazz)
+        return isConcreteClass(clazz) && hasInterfaces(clazz).not()
     }
 
     fun isInterface(clazz: Class<*>): Boolean {
@@ -15,7 +15,7 @@ object ClassTypeClassifier : TypeClassifier {
     }
 
     private fun isConcreteClass(clazz: Class<*>): Boolean {
-        return !clazz.isInterface
+        return isInterface(clazz).not()
     }
 
     private fun hasInterfaces(clazz: Class<*>): Boolean {

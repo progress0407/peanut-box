@@ -1,4 +1,4 @@
-package philo.peanutbox.core.feature
+package philo.peanutbox.core.feature.scanner
 
 import org.reflections.Reflections
 
