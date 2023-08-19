@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertAll
+import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.function.Executable
 import philo.peanutbox.app.item.ItemService
@@ -21,8 +22,9 @@ class PeanutBoxTest {
         PeanutBox.clear()
     }
 
+    @DisplayName("(Simple Case) Item Service를 땅콩 박스에 등록하고 불러온다")
     @Test
-    fun test() {
+    fun register_peanut_box_0() {
         PeanutBox.init("philo.peanutbox.app")
         val itemService = PeanutBox.findPeanut(ItemService::class.java)
 
@@ -32,9 +34,11 @@ class PeanutBoxTest {
         )
     }
 
+    @DisplayName("[Test Case 1] 트리 구조의 구체 클래스(땅콩)을 등록한다")
     @Test
-    fun getPeanut() {
+    fun register_peanut_box_1() {
         PeanutBox.init("philo.peanutbox.core.test_case_1")
+
         assertAll(
             Executable { assert_peanut_contains(TC1_Layer_1_1::class.java) },
             Executable { assert_peanut_contains(TC1_Layer_1_2::class.java) },
@@ -46,10 +50,13 @@ class PeanutBoxTest {
         )
     }
 
+    @DisplayName("[Test Case 2] 레이어 아키텍처의 클래스들을 땅콩 박스에 등록한다 (인터페이스 포함)")
     @Test
-    fun getPeanut_2() {
+    fun register_peanut_box_2() {
         PeanutBox.init("philo.peanutbox.core.test_case_2")
+
         val userController: UserController = PeanutBox.findPeanut(UserController::class.java)
+
         assertAll(
             Executable { assert_peanut_contains(UserService::class.java) },
             Executable { assert_peanut_contains(InMemoryUserRepository::class.java) },
@@ -60,9 +67,11 @@ class PeanutBoxTest {
         )
     }
 
+    @DisplayName("[Test Case 3] 인터페이스와 구체 클래스가 혼용되고 수동 Config 등록이 있는 복잡한 상황에서 땅콩 박스를 등록한다")
     @Test
-    fun getPeanut_3() {
+    fun register_peanut_box_3() {
         PeanutBox.init("philo.peanutbox.core.test_case_3")
+
         assertAll(
             Executable { assert_peanut_contains(TC3_Layer_1::class.java) },
             Executable { assert_peanut_contains(TC3_Layer_2_1::class.java) },
