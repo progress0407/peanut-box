@@ -3,7 +3,7 @@ package philo.peanutbox.core.feature.scanner
 import org.reflections.Reflections
 import philo.peanutbox.core.annotation.ThisIsPeanut
 import philo.peanutbox.core.feature.Peanuts
-import philo.peanutbox.core.feature.peanutfactory.ClassTypePeanutFactory
+import philo.peanutbox.core.feature.peanutfactory.PeanutFactory
 import java.util.*
 
 object AutoPeanutScanner : PeanutScanner() {
@@ -27,7 +27,7 @@ object AutoPeanutScanner : PeanutScanner() {
                 continue
             }
             validateConstructorUnique(peanutClass)
-            val newInstance = ClassTypePeanutFactory.createPeanut(peanutClass)
+            val newInstance = PeanutFactory.createPeanutsRecursively(peanutClass)
             Peanuts.add(newInstance)
         }
     }
