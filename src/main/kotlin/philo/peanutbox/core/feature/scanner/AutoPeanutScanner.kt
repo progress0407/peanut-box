@@ -6,11 +6,11 @@ import philo.peanutbox.core.feature.Peanuts
 import philo.peanutbox.core.feature.peanutfactory.ClassTypePeanutFactory
 import java.util.*
 
-object AutoPeanutScanner {
+object AutoPeanutScanner : PeanutScanner() {
 
     var reflections: Reflections? = null
 
-    fun scan(reflections: Reflections) {
+    override fun scan(reflections: Reflections) {
         AutoPeanutScanner.reflections = reflections
         return try {
             scanInternal()

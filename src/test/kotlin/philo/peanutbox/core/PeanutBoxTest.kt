@@ -28,7 +28,7 @@ class PeanutBoxTest {
 
         assertAll(
             Executable { assertThat(itemService).isNotNull },
-            Executable { assertThat(itemService).isInstanceOf(ItemService::class.java) }
+            Executable { assert_peanut_contains(ItemService::class.java) }
         )
     }
 
