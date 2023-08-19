@@ -1,9 +1,9 @@
 package philo.peanutbox.core.test_case_3;
 
 import philo.peanutbox.core.annotation.Peanut;
-import philo.peanutbox.core.annotation.ThisIsPeanutContainer;
+import philo.peanutbox.core.annotation.PeanutContainer;
 
-@ThisIsPeanutContainer
+@PeanutContainer
 public class TC3_Config {
 
     @Peanut

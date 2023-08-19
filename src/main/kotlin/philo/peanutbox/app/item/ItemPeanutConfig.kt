@@ -1,9 +1,9 @@
 package philo.peanutbox.app.item
 
 import philo.peanutbox.core.annotation.Peanut
-import philo.peanutbox.core.annotation.ThisIsPeanutContainer
+import philo.peanutbox.core.annotation.PeanutContainer
 
-@ThisIsPeanutContainer
+@PeanutContainer
 class ItemPeanutConfig {
 
     @Peanut

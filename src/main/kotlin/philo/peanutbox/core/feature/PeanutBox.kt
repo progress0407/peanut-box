@@ -6,27 +6,23 @@ import philo.peanutbox.core.feature.scanner.ManualPeanutScanner
 
 object PeanutBox {
 
-    private val peanuts: MutableSet<Any> = HashSet()
-
     fun init(path: String) {
         val reflections = Reflections(path)
 
         val manualPeanuts = ManualPeanutScanner.scan(reflections)
-        val allPeanuts = AutoPeanutScanner.scan(reflections, manualPeanuts)
+        Peanuts.addAll(manualPeanuts)
 
-        peanuts.addAll(allPeanuts)
+        AutoPeanutScanner.scan(reflections)
 
-        println("registered peanuts: \n${peanuts.joinToString(separator = "\n")}")
+        println("registered peanuts: \n${Peanuts.selfInfo()}")
     }
 
     fun <T> findPeanut(clazz: Class<T>): T {
-        return peanuts.stream()
-                .filter { peanut -> clazz.isAssignableFrom(peanut.javaClass) }
-                .findAny()
-                .orElseThrow { RuntimeException("해당 peanut이 존재하지 않습니다.") } as T
+        return Peanuts.findPeanut(clazz)
+            ?: throw RuntimeException("해당 peanut이 존재하지 않습니다.")
     }
 
     fun clear() {
-        peanuts.clear()
+        Peanuts.clear()
     }
 }

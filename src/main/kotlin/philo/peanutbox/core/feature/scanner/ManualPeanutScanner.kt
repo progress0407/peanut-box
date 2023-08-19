@@ -2,7 +2,7 @@ package philo.peanutbox.core.feature.scanner
 
 import org.reflections.Reflections
 import philo.peanutbox.core.annotation.Peanut
-import philo.peanutbox.core.annotation.ThisIsPeanutContainer
+import philo.peanutbox.core.annotation.PeanutContainer
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
 import kotlin.reflect.full.createInstance
@@ -18,7 +18,7 @@ object ManualPeanutScanner : PeanutScanner {
     }
 
     private fun extractPeanutConfigClasses(reflections: Reflections): MutableSet<Class<*>> =
-            reflections.getTypesAnnotatedWith(ThisIsPeanutContainer::class.java)
+            reflections.getTypesAnnotatedWith(PeanutContainer::class.java)
 
     private fun createPeanutsFromConfig(peanutConfigClass: KClass<*>): List<Any> {
         val peanutConfigObject = peanutConfigClass.createInstance()

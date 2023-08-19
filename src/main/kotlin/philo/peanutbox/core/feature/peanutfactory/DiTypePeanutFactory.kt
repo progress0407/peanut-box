@@ -1,7 +1,7 @@
 package philo.peanutbox.core.feature.peanutfactory
 
 import philo.peanutbox.core.annotation.GiveMePeanut
-import philo.peanutbox.core.feature.scanner.AutoPeanutScanner
+import philo.peanutbox.core.feature.Peanuts
 import java.lang.reflect.Constructor
 import java.util.*
 import java.util.Arrays.stream
@@ -16,13 +16,16 @@ object DiTypePeanutFactory {
      * DFS로 동작합니다.
      */
     fun createPeanut(peanutClass: Class<*>): Any {
-        val foundPeanut = findPeanut(peanutClass)
+        val foundPeanut = Peanuts.findPeanut(peanutClass)
         if (isAlreadyExistPeanut(foundPeanut)) {
             return foundPeanut!!
+
         } else if (isDefaultConstructorInjection(peanutClass)) {
             return createPeanutByDefaultConstructor(peanutClass)
+
         } else if (isConstructorWithArgumentsInjection(peanutClass)) {
             return createPeanutByConstructorWithArguments(peanutClass)
+
         } else if (isFieldInjection(peanutClass)) {
             return createPeanutByFileInjection(peanutClass)
         }
@@ -43,8 +46,7 @@ object DiTypePeanutFactory {
 
     @Throws(Exception::class)
     private fun createPeanutByConstructorWithArguments(peanutClass: Class<*>): Any {
-        val constructors = peanutClass.declaredConstructors
-        val constructor = constructors[0]
+        val constructor = peanutClass.declaredConstructors[0]
         val parameterTypes = constructor.parameterTypes
         val parameterObjects = findAndCacheConstructorArguments(parameterTypes)
         return constructor.newInstance(*parameterObjects)
@@ -64,13 +66,12 @@ object DiTypePeanutFactory {
     private fun createPeanutByFileInjection(peanutClass: Class<*>): Any {
         val hiddenDefaultConstructor = getDefaultConstructor(peanutClass)
         val newObject = hiddenDefaultConstructor.newInstance()
-        val fields = peanutClass.declaredFields
-        for (field in fields) {
+        for (field in peanutClass.declaredFields) {
             if (field.isAnnotationPresent(GiveMePeanut::class.java)) {
                 field.isAccessible = true
                 val fieldObject = ClassTypePeanutFactory.createPeanut(field.type)
                 field[newObject] = fieldObject // 생성한 객체의 필드에 주입
-                AutoPeanutScanner.peanuts.add(fieldObject)
+                Peanuts.add(fieldObject)
             }
         }
         return newObject
@@ -86,18 +87,8 @@ object DiTypePeanutFactory {
         val argumentObjects = stream(argumentClasses)
             .map { ClassTypePeanutFactory.createPeanut(it) }
             .toArray()
-
-        AutoPeanutScanner.peanuts.addAll(argumentObjects)
-
+        Peanuts.addAll(argumentObjects)
         return argumentObjects
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun <T> findPeanut(clazz: Class<T>): T? {
-        return AutoPeanutScanner.peanuts.stream()
-            .filter { peanut -> clazz.isAssignableFrom(peanut!!.javaClass) }
-            .findAny()
-            .orElse(null) as T?
     }
 
     private fun isAlreadyExistPeanut(peanut: Any?): Boolean {

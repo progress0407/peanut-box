@@ -2,20 +2,18 @@ package philo.peanutbox.core.feature.scanner
 
 import org.reflections.Reflections
 import philo.peanutbox.core.annotation.ThisIsPeanut
+import philo.peanutbox.core.feature.Peanuts
 import philo.peanutbox.core.feature.peanutfactory.ClassTypePeanutFactory
 import java.util.*
 
 object AutoPeanutScanner {
 
     var reflections: Reflections? = null
-    val peanuts: MutableSet<Any> = mutableSetOf()
 
-    fun scan(reflections: Reflections, peanuts: Set<Any>): Set<Any> {
-        AutoPeanutScanner.peanuts.addAll(peanuts)
+    fun scan(reflections: Reflections) {
         AutoPeanutScanner.reflections = reflections
         return try {
             scanInternal()
-            this.peanuts
         } catch (e: Exception) {
             throw RuntimeException(e)
         }
@@ -30,7 +28,7 @@ object AutoPeanutScanner {
             }
             validateConstructorUnique(peanutClass)
             val newInstance = ClassTypePeanutFactory.createPeanut(peanutClass)
-            peanuts.add(newInstance)
+            Peanuts.add(newInstance)
         }
     }
 
