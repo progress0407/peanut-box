@@ -27,7 +27,7 @@ object AutoPeanutScanner : PeanutScanner() {
                 continue
             }
             validateConstructorUnique(peanutClass)
-            val newInstance = PeanutFactory.createPeanutsRecursively(peanutClass)
+            val newInstance = PeanutFactory.createPeanutsRecursively(peanutClass.kotlin)
             Peanuts.add(newInstance)
         }
     }

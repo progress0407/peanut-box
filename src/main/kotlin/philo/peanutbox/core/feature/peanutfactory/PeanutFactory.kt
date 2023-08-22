@@ -1,12 +1,21 @@
 package philo.peanutbox.core.feature.peanutfactory
 
+import mu.KLogger
+import mu.KotlinLogging
 import philo.peanutbox.core.annotation.GiveMePeanut
 import philo.peanutbox.core.feature.Peanuts
-import philo.peanutbox.core.feature.scanner.AutoPeanutScanner
-import java.lang.reflect.Constructor
-import java.util.Arrays.stream
+import philo.peanutbox.core.support.*
+import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
+import kotlin.reflect.KProperty1
+import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.isAccessible
 
 object PeanutFactory {
+
+    private val log: KLogger = KotlinLogging.logger {}
 
     /**
      * Peanut을 생성하거나 이미 존재하는 Peanut을 반환합니다.
@@ -15,22 +24,22 @@ object PeanutFactory {
      *
      * DFS로 동작합니다.
      */
-    fun createPeanutsRecursively(peanutClass: Class<*>): Any {
-        val foundPeanut = Peanuts.findPeanut(peanutClass)
+    fun createPeanutsRecursively(peanutClass: KClass<*>): Any {
+        val foundPeanut = Peanuts.findPeanut(peanutClass.java)
         if (isAlreadyExistPeanut(foundPeanut)) {
-            return foundPeanut!!
+            return foundPeanut
         }
         return createAndRegisterPeanutsByInjection(peanutClass)
     }
 
-    private fun createAndRegisterPeanutsByInjection(peanutClass: Class<*>): Any {
-        if (isDefaultConstructorInjection(peanutClass)) {
-            return createPeanutByDefaultConstructor(peanutClass)
+    private fun createAndRegisterPeanutsByInjection(peanutClass: KClass<*>): Any {
+        if (peanutClass.isDefaultConstructorInjection) {
+            return peanutClass.createObjectByDefaultConstructor
 
-        } else if (isConstructorWithArgumentsInjection(peanutClass)) {
+        } else if (peanutClass.isConstructorWithArgumentsInjection) {
             return createPeanutByConstructorWithArguments(peanutClass)
 
-        } else if (isFieldInjection(peanutClass)) {
+        } else if (peanutClass.isFieldInjection) {
             return createPeanutByFileInjection(peanutClass)
         }
         throw RuntimeException("허용하지 않는 DI 방식입니다. : + $peanutClass")
@@ -41,31 +50,27 @@ object PeanutFactory {
      *
      * DFS로 동작합니다.
      */
-    private fun createAndRegisterPeanutsByType(peanutClass: Class<*>): Any {
-        return if (isConcreteClass(peanutClass)) {
-            createPeanutsRecursively(peanutClass)
-        } else if (isInterface(peanutClass)) {
-            createPeanutsRecursively(getConcreteType(peanutClass))
+    private fun createAndAddPeanutsByTypeRecursively(clazz: KClass<*>): Any {
+        return if (clazz.isConcreteClass) {
+            createPeanutsRecursively(clazz)
+        } else if (clazz.isInterface) {
+            createPeanutsRecursively(clazz.java.concreteType)
         } else {
-            throw RuntimeException("예측하지 못한 타입입니다: + $peanutClass")
+            throw RuntimeException("예측하지 못한 타입입니다: + $clazz")
         }
     }
 
-    private fun createPeanutByDefaultConstructor(peanutClass: Class<*>): Any {
-        return getDefaultConstructor(peanutClass).newInstance()
-    }
-
-    private fun getDefaultConstructor(peanutClass: Class<*>): Constructor<*> {
-        val constructor = peanutClass.getDeclaredConstructor()
+    private fun getDefaultConstructor(peanutClass: KClass<*>): KFunction<Any> {
+        val constructor = peanutClass.primaryConstructor ?: throw RuntimeException("기본 생성자는 반드시 있어야 합니다")
         constructor.isAccessible = true
         return constructor
     }
 
-    private fun createPeanutByConstructorWithArguments(peanutClass: Class<*>): Any {
-        val constructor = peanutClass.declaredConstructors[0]
-        val parameterTypes = constructor.parameterTypes
+    private fun createPeanutByConstructorWithArguments(peanutClass: KClass<*>): Any {
+        val constructor = peanutClass.primaryConstructor
+        val parameterTypes = constructor!!.parameters.map { it.type.classifier as KClass<*> }
         val parameterObjects = findAndCacheConstructorArguments(parameterTypes)
-        return constructor.newInstance(*parameterObjects)
+        return constructor.call(*parameterObjects)
     }
 
     /**
@@ -77,14 +82,14 @@ object PeanutFactory {
      *
      * 4. 해당 peanut을 반환합니다
      */
-    private fun createPeanutByFileInjection(peanutClass: Class<*>): Any {
+    private fun createPeanutByFileInjection(peanutClass: KClass<*>): Any {
         val hiddenDefaultConstructor = getDefaultConstructor(peanutClass)
-        val newObject = hiddenDefaultConstructor.newInstance()
-        for (field in peanutClass.declaredFields) {
-            if (field.isAnnotationPresent(GiveMePeanut::class.java)) {
-                field.isAccessible = true
-                val fieldObject = createAndRegisterPeanutsByType(field.type)
-                field[newObject] = fieldObject // 생성한 객체의 필드에 주입
+        val newObject = hiddenDefaultConstructor.call()
+        for (property: KProperty1<out Any, *> in peanutClass.declaredMemberProperties) {
+            if (property.findAnnotation<GiveMePeanut>() != null) {
+                property.isAccessible = true
+                val fieldObject = createAndAddPeanutsByTypeRecursively(property::class)
+                newObject.set(property, to = fieldObject)
                 Peanuts.add(fieldObject)
             }
         }
@@ -96,78 +101,15 @@ object PeanutFactory {
      *
      * 2. 가져온 peanut인자를 autoPeanutScanner의 peanuts 필드에 추가합니다.
      */
-    private fun findAndCacheConstructorArguments(argumentClasses: Array<Class<*>>): Array<Any> {
-        val argumentObjects = stream(argumentClasses)
-            .map { createAndRegisterPeanutsByType(it) }
+    private fun findAndCacheConstructorArguments(classes: List<KClass<*>>): Array<Any> {
+        val argumentObjects = classes.stream()
+            .map { createAndAddPeanutsByTypeRecursively(it::class) }
             .toArray()
         Peanuts.addAll(argumentObjects)
         return argumentObjects
     }
 
-    /**
-     * 하위 클래스를 가져옵니다.
-     *
-     * 단, 하위 클래스가 하나인 경우만을 가정합니다.
-     *
-     * 즉, 스프링의 @Praimary를 고려하지 않습니다.
-     */
-    private fun getConcreteType(peanutClass: Class<*>): Class<*> {
-        val subPeanutClasses = AutoPeanutScanner.reflections!!.getSubTypesOf(peanutClass).toTypedArray()
-        if (subPeanutClasses.isEmpty()) {
-            throw RuntimeException("자식 클래스가 존재하지 않습니다. : $peanutClass")
-        }
-        if (subPeanutClasses.size >= 2) {
-            throw RuntimeException("여러 하위 타입을 지원하지 않습니다. : " + subPeanutClasses.contentToString())
-        }
-        return subPeanutClasses[0] as Class<*>
-    }
-
     private fun isAlreadyExistPeanut(peanut: Any?): Boolean {
         return peanut != null
-    }
-
-    private fun isDefaultConstructorInjection(peanutClass: Class<*>): Boolean {
-        return hasDefaultConstructor(peanutClass) && hasFieldInjectionAnnotation(peanutClass).not()
-    }
-
-    private fun isFieldInjection(peanutClass: Class<*>): Boolean {
-        return hasDefaultConstructor(peanutClass) && hasFieldInjectionAnnotation(peanutClass)
-    }
-
-    private fun isConstructorWithArgumentsInjection(peanutClass: Class<*>): Boolean {
-        return hasConstructorWithArguments(peanutClass) && hasFieldInjectionAnnotation(peanutClass).not()
-    }
-
-    private fun hasDefaultConstructor(type: Class<*>): Boolean {
-        return try {
-            type.getDeclaredConstructor()
-            true
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    /**
-     * 해당 클래스 자체가 아닌,
-     *
-     * 클래스의 필드들이 필드 주입 어노테이션(GiveMePeanut)을 가지고 있는 경우
-     */
-    private fun hasFieldInjectionAnnotation(type: Class<*>): Boolean {
-        return stream(type.getDeclaredFields())
-            .anyMatch { it.isAnnotationPresent(GiveMePeanut::class.java) }
-    }
-
-    private fun hasConstructorWithArguments(peanutClass: Class<*>): Boolean {
-        val constructor = peanutClass.getDeclaredConstructors()[0] // first constructor
-        val parameterClasses = constructor.parameterTypes
-        return parameterClasses.isNotEmpty()
-    }
-
-    private fun isConcreteClass(clazz: Class<*>): Boolean {
-        return isInterface(clazz).not()
-    }
-
-    private fun isInterface(clazz: Class<*>): Boolean {
-        return clazz.isInterface
     }
 }
