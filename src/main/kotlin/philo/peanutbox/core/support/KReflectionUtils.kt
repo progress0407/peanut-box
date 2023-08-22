@@ -5,10 +5,8 @@ import philo.peanutbox.core.feature.scanner.AutoPeanutScanner
 import kotlin.reflect.KClass
 import kotlin.reflect.KMutableProperty1
 import kotlin.reflect.KProperty1
-import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.findAnnotation
-import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.full.*
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * 코틀린 리플렉션 기능을 Human Readable 하고 편하게 사용하기 Utils 기능 모음 클래스
@@ -24,8 +22,51 @@ abstract class KReflectUtils {
 val KClass<*>.hasDefaultConstructor: Boolean
     get() = this.primaryConstructor?.parameters?.isEmpty() ?: false
 
+/*
 val KClass<*>.hasFieldInjectionAnnotation: Boolean
-    get() = this.declaredMemberProperties.any { it.findAnnotation<GiveMePeanut>() != null }
+    get() = this.declaredMemberProperties.any { prop ->
+        prop.isAccessible = true
+        prop.findAnnotation<GiveMePeanut>() != null
+    }
+*/
+
+val KClass<*>.hasFieldInjectionAnnotation: Boolean
+    get() {
+
+        for (function in this.declaredMemberFunctions) {
+            println("function = ${function}")
+        }
+
+        for (field in this.java.declaredFields) {
+            println("field = ${field}")
+            val annotation = field.getAnnotation(GiveMePeanut::class.java)
+            println("java annotation = ${annotation}")
+        }
+
+        val declaredMemberProperties = this.declaredMemberProperties
+        for (property in declaredMemberProperties) {
+
+            println("property = ${property.name}")
+
+            property.isAccessible = true
+
+            val foundAnnotation = property.findAnnotation<GiveMePeanut>()
+
+            println("foundAnnotation = ${foundAnnotation}")
+
+            if(foundAnnotation != null) {
+                return true
+            }
+
+            println("property.annotations = ${property.annotations}")
+
+            for (annotation in property.annotations) {
+
+                println("iter annotations = ${annotation}")
+            }
+        }
+        return false
+    }
 
 val KClass<*>.hasConstructorWithArguments: Boolean
     get() {

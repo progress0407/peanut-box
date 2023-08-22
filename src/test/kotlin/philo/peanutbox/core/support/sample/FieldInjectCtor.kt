@@ -1,9 +1,8 @@
 package philo.peanutbox.core.support.sample
 
-import philo.peanutbox.core.annotation.GiveMePeanut
-
 class FieldInjectCtor() {
 
-    @GiveMePeanut
-    private var f1: Any? = null
+//    @field:GiveMePeanut
+    @field:SuppressWarnings
+    public var field1: Any? = null
 }

@@ -1,22 +1,21 @@
 package philo.peanutbox.core.support
 
-import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Test
+import io.kotest.core.spec.style.StringSpec
+import io.kotest.matchers.shouldBe
 import philo.peanutbox.core.support.sample.DefCtor
 import philo.peanutbox.core.support.sample.FieldInjectCtor
 
-class KReflectUtilsTest {
+class KReflectUtilsTest : StringSpec({
 
-    @DisplayName("기본 생성자가 있는지를 검증한다")
-    @Test
-    fun hasDefaultConstructor() {
-        assertThat(DefCtor::class.hasDefaultConstructor).isTrue()
+    "기본 생성자가 있는지를 검증한다" {
+        DefCtor::class.hasDefaultConstructor shouldBe true
     }
 
-    @DisplayName("필드 인젝션이 있는지를 검증한다")
-    @Test
-    fun hasFieldInjectionAnnotation() {
-        assertThat(FieldInjectCtor::class.isFieldInjection).isTrue()
+    "필드 인젝션 어노테이션이 있는지 검증한다" {
+        FieldInjectCtor::class.hasFieldInjectionAnnotation shouldBe true
     }
-}
+
+    "필드 주입 생성 방식인지 검증한다" {
+        FieldInjectCtor::class.isFieldInjection shouldBe true
+    }
+})
