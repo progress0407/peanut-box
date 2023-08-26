@@ -3,6 +3,6 @@ package philo.peanutbox.core.annotation
 /**
  * 땅콩을 필드 주입을 하기 위해 사용한다
  */
-@Target(AnnotationTarget.FIELD)
+@Target(AnnotationTarget.PROPERTY)
 @Retention(AnnotationRetention.RUNTIME)
 annotation class GiveMePeanut 
