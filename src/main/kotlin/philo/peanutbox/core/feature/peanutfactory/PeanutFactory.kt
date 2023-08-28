@@ -69,7 +69,7 @@ object PeanutFactory {
     private fun createPeanutByConstructorWithArguments(peanutClass: KClass<*>): Any {
         val constructor = peanutClass.primaryConstructor
         val parameterTypes = constructor!!.parameters.map { it.type.classifier as KClass<*> }
-        val parameterObjects = findAndCacheConstructorArguments(parameterTypes)
+        val parameterObjects = findAndAddConstructorArguments(parameterTypes)
         return constructor.call(*parameterObjects)
     }
 
@@ -101,7 +101,7 @@ object PeanutFactory {
      *
      * 2. 가져온 peanut인자를 autoPeanutScanner의 peanuts 필드에 추가합니다.
      */
-    private fun findAndCacheConstructorArguments(classes: List<KClass<*>>): Array<Any> {
+    private fun findAndAddConstructorArguments(classes: List<KClass<*>>): Array<Any> {
         val argumentObjects = classes.stream()
             .map { createAndAddPeanutsByTypeRecursively(it::class) }
             .toArray()

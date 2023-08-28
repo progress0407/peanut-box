@@ -9,11 +9,12 @@ import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
 import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.jvm.isAccessible
 
 /**
  * 코틀린 리플렉션 기능을 Human Readable 하고 편하게 사용하기 Utils 기능 모음 클래스
  */
-abstract class KReflectUtils {
+abstract class ReflectUtils {
 }
 
 /**
@@ -81,7 +82,11 @@ val Class<*>.concreteType: KClass<*>
     }
 
 val KClass<*>.createObjectByDefaultConstructor: Any
-    get() = this.createInstance()
+    get() {
+        val primaryConstructor = this.primaryConstructor ?: throw RuntimeException("기본 생성자가 존재하지 않습니다")
+        primaryConstructor.isAccessible = true
+        return this.createInstance()
+    }
 
 fun Any.set(property: KProperty1<out Any, *>, to: Any) {
     (property as KMutableProperty1<out Any, *>).setter.call(this, to)

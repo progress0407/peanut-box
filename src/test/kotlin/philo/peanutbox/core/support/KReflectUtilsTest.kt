@@ -12,8 +12,21 @@ class KReflectUtilsTest : StringSpec({
     }
 
     "필드 인젝션 어노테이션이 있는지 검증한다" {
-        DefaultConstructorClass::class.hasFieldInjectionAnnotation shouldBe false
         FieldInjectConstructorClass::class.hasFieldInjectionAnnotation shouldBe true
+        FieldInjectConstructorClass2::class.hasFieldInjectionAnnotation shouldBe true
+        DefaultConstructorClass::class.hasFieldInjectionAnnotation shouldBe false
+    }
+
+    /**
+     * TODO
+     * isDefaultConstructorInjection
+     *
+     * 생성자 주입
+     */
+    "필드 인젝션 어노테이션이 있는지 검증한다 [ case 2] " {
+        FieldInjectConstructorClass2::class.hasFieldInjectionAnnotation shouldBe true // todo false!
+        FieldInjectConstructorClass2::class.hasDefaultConstructor shouldBe false
+//        isDefaultConstructorInjection
     }
 
     "필드 주입 생성 방식인지 검증한다" {
